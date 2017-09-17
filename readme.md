@@ -1,4 +1,4 @@
-[![Docker Build Status](https://img.shields.io/docker/build/jaaaco/s3-backup-restore.svg)](https://hub.docker.com/r/jaaaco/s3-backup-restore/)
+[![Docker Build Status](https://img.shields.io/docker/build/jaaaco/mysql-s3-backup-restore.svg)](https://hub.docker.com/r/jaaaco/mysql-s3-backup-restore/)
 
 # mySql S3 backup / restore-on-startup container
 
@@ -26,7 +26,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
   mysql-backup:
-    image: s3-backup-restore
+    image: jaaaco/mysql-s3-backup-restore
     depends_on:
       - mysql
     environment:
@@ -42,7 +42,7 @@ services:
 docker exec running-container-id /backup.sh backup
 ```
 
-## Required ENV variables
+## Required and optional ENV variables
 
 * AWS_ACCESS_KEY_ID - key for aws user with s3 put-object and get-object permissions
 * AWS_SECRET_ACCESS_KEY
