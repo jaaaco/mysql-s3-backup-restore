@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  app:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_PASSWORD: password
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+  mysql-backup:
+    image: mysql-backup
+    environment:
+      FILEPREFIX: wordpress/default
+      S3BUCKET: <your-bucket-name-here>
+      AWS_ACCESS_KEY_ID: <your-key-id-here>
+      AWS_SECRET_ACCESS_KEY: <your-aws-secret-key-here>
+    command: /wait
+    depends_on:
+      - mysql

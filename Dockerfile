@@ -3,6 +3,16 @@ FROM debian:jessie-slim
 RUN apt-get update && apt-get install -y cron python-pip
 RUN pip install awscli
 
-ADD backup.sh /
-RUN chmod +x backup.sh
-CMD ["./backup.sh"]
+RUN apt-get install -y mysql-client
+
+ADD backup /
+ADD restore /
+ADD cron /
+ADD wait /
+
+RUN chmod +x backup
+RUN chmod +x restore
+RUN chmod +x cron
+RUN chmod +x wait
+
+CMD ["./cron"]

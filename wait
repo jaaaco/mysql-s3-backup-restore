@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+LOGFIFO='/var/log/cron.fifo'
+if [[ ! -e "$LOGFIFO" ]]; then
+    touch "$LOGFIFO"
+fi
+
+tail -f "$LOGFIFO"

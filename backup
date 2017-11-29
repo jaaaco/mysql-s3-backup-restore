@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+  echo "AWS_ACCESS_KEY_ID must be set"
+  HAS_ERRORS=true
+fi
+
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+  echo "AWS_SECRET_ACCESS_KEY must be set"
+  HAS_ERRORS=true
+fi
+
+if [ -z "$S3BUCKET" ]; then
+  echo "S3BUCKET must be set"
+  HAS_ERRORS=true
+fi
+
+if [ $HAS_ERRORS ]; then
+  echo "Exiting.... "
+  exit 1
+fi
+
+if [ -z "$MYSQL_USER" ]; then
+  MYSQL_USER='root'
+fi
+
+if [ -z "$MYSQL_PASSWORD" ]; then
+  MYSQL_PASSWORD='password'
+fi
+
+if [ -z "$MYSQL_HOST" ]; then
+  MYSQL_HOST='mysql'
+fi
+
+if [ -z "$FILEPREFIX" ]; then
+  FILEPREFIX='backup'
+fi
+
+FILENAME=$FILEPREFIX.latest.sql.gz
+
+echo "Starting backup (v4) ... $(date)"
+mysqldump --protocol tcp -u $MYSQL_USER -h $MYSQL_HOST -p$MYSQL_PASSWORD --all-databases > latest.sql
+gzip latest.sql
+aws s3api put-object --bucket $S3BUCKET --key $FILENAME --body latest.sql.gz
+echo "Cleaning up..."
+rm latest.sql.gz
+exit 0

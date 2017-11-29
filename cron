@@ -42,28 +42,6 @@ fi
 
 FILENAME=$FILEPREFIX.latest.sql.gz
 
-if [ "$1" == "backup" ] ; then
-  echo "Starting backup (v4) ... $(date)"
-  mysqldump --protocol tcp -u $MYSQL_USER -h $MYSQL_HOST -p$MYSQL_PASSWORD --all-databases > latest.sql
-  gzip latest.sql
-  aws s3api put-object --bucket $S3BUCKET --key $FILENAME --body latest.sql.gz
-  echo "Cleaning up..."
-  rm latest.sql.gz
-  exit 0
-fi
-
-echo "Restoring latest backup after initial delay: $DELAY (sec)"
-sleep $DELAY
-aws s3api get-object --bucket $S3BUCKET --key $FILENAME latest.sql.gz
-if [ -e latest.sql.gz ] ; then
-    gunzip latest.sql.gz
-    cat latest.sql | mysql --protocol tcp -u $MYSQL_USER -h $MYSQL_HOST -p$MYSQL_PASSWORD
-    echo "Cleaning up..."
-    rm latest.sql
-else
-    echo "No backup to restore"
-fi
-
 CRON_SCHEDULE=${CRON_SCHEDULE:-3 3 * * *}
 
 LOGFIFO='/var/log/cron.fifo'
@@ -80,7 +58,7 @@ CRON_ENV="$CRON_ENV\nMYSQL_HOST='$MYSQL_HOST'"
 CRON_ENV="$CRON_ENV\nPATH=$PATH"
 CRON_ENV="$CRON_ENV\nFILEPREFIX=$FILEPREFIX"
 
-echo -e "$CRON_ENV\n$CRON_SCHEDULE /backup.sh backup > $LOGFIFO 2>&1" | crontab -
+echo -e "$CRON_ENV\n$CRON_SCHEDULE /backup > $LOGFIFO 2>&1" | crontab -
 crontab -l
 cron
 tail -f "$LOGFIFO"

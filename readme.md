@@ -1,13 +1,35 @@
 [![Docker Build Status](https://img.shields.io/docker/build/jaaaco/mysql-s3-backup-restore.svg)](https://hub.docker.com/r/jaaaco/mysql-s3-backup-restore/)
 
-# mySql S3 backup / restore-on-startup container
+# MySql S3 backup (with cron) / restore container
 
-When started container checks if there is archive present on S3 and restores it in linked mysql database.
+Container can work in cron-mode and wait-mode:
 
-Then it goes to cron-mode, making archive **in the same S3 file** according to specified CRON_SCHEDULE.
+# Cron mode
+
+Default mode, container will make backups according to CRON_SCHEDULE
+
+# Wait mode
+
+In this mode cron is disabled, you may make backups / restores with docker exec (see below).
+
+# Backup command
+
+Container is making archive **in the same S3 file every time**.
 
 If you want backup file retention enable Versioning on S3 bucket and create S3 Life Cycle Rules to permanently 
-delete older version after certain number of days.
+delete older version after certain number of days. 
+
+To make backup when container is running in cron-mode or wait-mode:
+
+```
+docker exec -it <container-id> backup
+```
+
+# Restore command
+
+```
+docker exec -it <container-id> backup
+```
 
 ## Usage
 
@@ -26,20 +48,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
   mysql-backup:
-    image: jaaaco/mysql-s3-backup-restore
+    image: mysql-backup
+    environment:
+      FILEPREFIX: wordpress/default
+      S3BUCKET: <your-bucket-name-here>
+      AWS_ACCESS_KEY_ID: <your-key-id-here>
+      AWS_SECRET_ACCESS_KEY: <your-aws-secret-key-here>
+    command: /wait
     depends_on:
       - mysql
-    environment:
-      S3BUCKET: your-aws-s3-bucket-name
-      AWS_ACCESS_KEY_ID: your-aws-access-key
-      AWS_SECRET_ACCESS_KEY: your-aws-secret-access-key
-      FILEPREFIX: my-app-database
-```
-
-## Creating initial backup manually
-
-```
-docker exec running-container-id /backup.sh backup
 ```
 
 ## Required and optional ENV variables
@@ -49,7 +66,6 @@ docker exec running-container-id /backup.sh backup
 * S3BUCKET - S3 bucket name
 * FILEPREFIX - (optional) file prefix, defaults to "backup"
 * CRON_SCHEDULE - (optional) cron schedule, defaults to 4 4 * * * (at 4:04 am, every day)
-* DELAY - (optional) restore delay in seconds, defaults to 15 sec.
 * MYSQL_HOST - (optional) database host name, defaults to "mysql"
 * MYSQL_USER - (optional) database user, defaults to "root"
 * MYSQL_PASSWORD - (optional) password, defaults to "password"
