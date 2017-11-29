@@ -16,6 +16,6 @@ services:
       S3BUCKET: <your-bucket-name-here>
       AWS_ACCESS_KEY_ID: <your-key-id-here>
       AWS_SECRET_ACCESS_KEY: <your-aws-secret-key-here>
-    command: /wait
+    command: /cron
     depends_on:
       - mysql

@@ -6,11 +6,12 @@ Container can work in cron-mode and wait-mode:
 
 # Cron mode
 
-Default mode, container will make backups according to CRON_SCHEDULE
+Default mode, container will make backups according to CRON_SCHEDULE env variable. 
 
 # Wait mode
 
-In this mode cron is disabled, you may make backups / restores with docker exec (see below).
+In this mode cron is disabled, you may make backups / restores with docker exec (see below). 
+To enable wait mode add command: /wait to your composition.
 
 # Backup command
 
@@ -54,7 +55,7 @@ services:
       S3BUCKET: <your-bucket-name-here>
       AWS_ACCESS_KEY_ID: <your-key-id-here>
       AWS_SECRET_ACCESS_KEY: <your-aws-secret-key-here>
-    command: /wait
+    command: /cron
     depends_on:
       - mysql
 ```
