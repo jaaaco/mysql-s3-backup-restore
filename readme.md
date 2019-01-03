@@ -55,7 +55,6 @@ services:
       S3BUCKET: <your-bucket-name-here>
       AWS_ACCESS_KEY_ID: <your-key-id-here>
       AWS_SECRET_ACCESS_KEY: <your-aws-secret-key-here>
-    command: /cron
     depends_on:
       - mysql
 ```
@@ -66,7 +65,7 @@ services:
 * AWS_SECRET_ACCESS_KEY
 * S3BUCKET - S3 bucket name
 * FILEPREFIX - (optional) file prefix, defaults to "backup"
-* CRON_SCHEDULE - (optional) cron schedule, defaults to 4 4 * * * (at 4:04 am, every day)
+* CRON_SCHEDULE - (optional) cron schedule, defaults to 3 3 * * * (at 3:03 am, every day)
 * MYSQL_HOST - (optional) database host name, defaults to "mysql"
 * MYSQL_USER - (optional) database user, defaults to "root"
 * MYSQL_PASSWORD - (optional) password, defaults to "password"
