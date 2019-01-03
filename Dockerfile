@@ -15,4 +15,6 @@ RUN chmod +x restore
 RUN chmod +x cron
 RUN chmod +x wait
 
+VOLUME /var/log/
+
 CMD ["./cron"]
